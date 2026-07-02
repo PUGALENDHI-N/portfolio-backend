@@ -7,17 +7,13 @@ const sendMail = async (req, res) => {
         const { name, email, mobile, message } = req.body;
 
         const transporter = nodemailer.createTransport({
-
-            service: "gmail",
-
+            host: "smtp.gmail.com",
+            port: 465,
+            secure: true, // true for port 465
             auth: {
-
                 user: process.env.EMAIL_USER,
-
                 pass: process.env.EMAIL_PASS,
-
             },
-
         });
 
         const mailOptions = {
@@ -45,6 +41,9 @@ const sendMail = async (req, res) => {
             `,
 
         };
+
+        await transporter.verify();
+        console.log("SMTP server is ready.");
 
         await transporter.sendMail(mailOptions);
 
