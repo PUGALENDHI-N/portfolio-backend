@@ -10,6 +10,10 @@ app.use(cors());
 
 app.use(express.json());
 
+app.get("/", (req, res) => {
+  res.send("Portfolio Backend is Running 🚀");
+});
+
 const contactRoute = require("./routes/contact");
 
 app.use("/api/contact", contactRoute);
