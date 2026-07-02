@@ -1,80 +1,65 @@
-const nodemailer = require("nodemailer");
+const { Resend } = require("resend");
+
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 const sendMail = async (req, res) => {
 
-    try {
+  try {
 
-        const { name, email, mobile, message } = req.body;
+    const { name, email, mobile, message } = req.body;
 
-        const transporter = nodemailer.createTransport({
-            host: "smtp.gmail.com",
-            port: 465,
-            secure: true, // true for port 465
-            auth: {
-                user: process.env.EMAIL_USER,
-                pass: process.env.EMAIL_PASS,
-            },
-        });
+    await resend.emails.send({
 
-        const mailOptions = {
+      from: "Portfolio <onboarding@resend.dev>",
 
-            from: process.env.EMAIL_USER,
+      to: "pugalendhinagaraj29@gmail.com",
 
-            to: process.env.EMAIL_USER,
+      subject: "New Portfolio Contact",
 
-            subject: "New Portfolio Contact",
+      html: `
+        <h2>New Contact Form Submission</h2>
 
-            html: `
+        <p><strong>Name:</strong> ${name}</p>
 
-            <h2>New Contact Form Submission</h2>
+        <p><strong>Email:</strong> ${email}</p>
 
-            <p><strong>Name :</strong> ${name}</p>
+        <p><strong>Mobile:</strong> ${mobile}</p>
 
-            <p><strong>Email :</strong> ${email}</p>
+        <p><strong>Message:</strong></p>
 
-            <p><strong>Mobile :</strong> ${mobile}</p>
+        <p>${message}</p>
+      `
 
-            <p><strong>Message :</strong></p>
+    });
 
-            <p>${message}</p>
+    res.status(200).json({
 
-            `,
+      success: true,
 
-        };
+      message: "Email Sent Successfully"
 
-        await transporter.verify();
-        console.log("SMTP server is ready.");
+    });
 
-        await transporter.sendMail(mailOptions);
+  }
 
-        res.status(200).json({
+  catch(error){
 
-            success: true,
+    console.error(error);
 
-            message: "Email Sent Successfully",
+    res.status(500).json({
 
-        });
+      success:false,
 
-    }
+      message:error.message
 
-    catch (error) {
+    });
 
-        console.log(error);
-
-        res.status(500).json({
-
-            success: false,
-
-            message: "Something Went Wrong",
-
-        });
-
-    }
+  }
 
 };
 
 module.exports = {
 
-    sendMail,
+  sendMail
 
 };
